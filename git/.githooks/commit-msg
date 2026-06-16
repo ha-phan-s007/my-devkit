@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# ============================================================================
+# commit-msg hook — Conventional Commits validation
+# Spec: https://www.conventionalcommits.org/en/v1.0.0/
+#
+# Portable: no project-specific logic. Drop this into any repo's .githooks/
+# and activate with `install-hooks.sh` (sets core.hooksPath=.githooks).
+#
+# Bypass intentionally with:  git commit --no-verify
+# ============================================================================
+
+COMMIT_MSG_FILE="$1"
+[[ -f "$COMMIT_MSG_FILE" ]] || { echo "❌ commit message file not found: $COMMIT_MSG_FILE"; exit 1; }
+
+# First non-comment, non-empty line = the commit subject.
+COMMIT_MSG=$(grep -v '^#' "$COMMIT_MSG_FILE" | sed '/^[[:space:]]*$/d' | head -1 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+
+# Auto-generated messages (merge/revert/fixup/squash) — skip validation.
+if [[ "$COMMIT_MSG" =~ ^(Merge|Revert|fixup!|squash!|amend!) ]]; then
+  exit 0
+fi
+
+# --- Conventional Commits v1.0.0 ---
+#   type(optional-scope)!: description
+#   - type: feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert
+#   - (scope): optional
+#   - !       : optional breaking-change marker
+#   - description: required, after ": "
+CONVENTIONAL_PATTERN='^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9 ._/-]+\))?!?: .+'
+
+if echo "$COMMIT_MSG" | grep -qE "$CONVENTIONAL_PATTERN"; then
+  exit 0
+fi
+
+cat >&2 <<'EOF'
+
+❌ Commit message does not follow an accepted format.
+
+   Required format (Conventional Commits):
+   - type(scope): description      scope optional
+   - type(scope)!: description     ! marks a breaking change
+
+   Types: feat | fix | docs | style | refactor | perf | test | build | ci | chore | revert
+   Scope: optional, lowercase, in parentheses
+   Description: present tense, lowercase start, no trailing period
+
+   Examples:
+     ✅ feat(auth): add token refresh endpoint
+     ✅ fix: handle empty response from upstream
+     ✅ docs(readme): document hook activation step
+     ✅ refactor(api)!: drop deprecated v1 routes
+
+   Spec: https://www.conventionalcommits.org/en/v1.0.0/
+   Bypass (only if you must): git commit --no-verify
+
+EOF
+exit 1

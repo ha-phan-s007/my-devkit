@@ -1,0 +1,14 @@
+# Repo này CHỦ ĐÍCH track local/ (đó là mục đích lưu setup cá nhân),
+# nhưng vẫn loại các thứ nhạy cảm / rác máy.
+.claude/
+.agent/
+.DS_Store
+*.log
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# artefact test của deploy-all.sh
+_t/

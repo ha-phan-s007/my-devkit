@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# ============================================================================
+# pre-commit hook — portable, language-agnostic guards
+#
+# Intentionally generic so it works across every repo (Node, Python, Go, …).
+# Project-specific checks (build, lint, contract validation) belong in the
+# repo's own pre-commit, not here.
+#
+# Bypass intentionally with:  git commit --no-verify
+# ============================================================================
+
+fail=0
+STAGED=$(git diff --cached --name-only --diff-filter=ACM)
+[[ -z "$STAGED" ]] && exit 0
+
+# 1) Secret-token scan in staged additions (GitHub PAT, ClickUp pk_, generic
+#    "AWS access key", private-key headers). Best-effort, not a vault.
+if git diff --cached | grep -nE '^\+.*(gh[pousr]_[A-Za-z0-9]{20,}|pk_[A-Za-z0-9]{10,}|AKIA[0-9A-Z]{16}|-----BEGIN [A-Z ]*PRIVATE KEY-----)' >/dev/null 2>&1; then
+  echo "❌ Possible secret/token detected in staged changes — remove it before committing."
+  fail=1
+fi
+
+# 2) Large-file guard (>5 MB) — keep repos lean; use Git LFS or external storage.
+while IFS= read -r f; do
+  [[ -f "$f" ]] || continue
+  size=$(wc -c < "$f" 2>/dev/null || echo 0)
+  if [[ "$size" -gt 5242880 ]]; then
+    echo "❌ Large file staged ($(( size / 1048576 )) MB > 5 MB): $f"
+    echo "   Use Git LFS or external storage, or unstage it."
+    fail=1
+  fi
+done <<< "$STAGED"
+
+# 3) Merge-conflict marker guard.
+if git diff --cached | grep -nE '^\+(<<<<<<< |=======$|>>>>>>> )' >/dev/null 2>&1; then
+  echo "❌ Unresolved merge-conflict markers found in staged changes."
+  fail=1
+fi
+
+# 4) Branch-name convention (warning only — never blocks).
+BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
+if [[ -n "$BRANCH" && "$BRANCH" != "HEAD" ]] && ! echo "$BRANCH" | grep -qE '^(main|master|develop|feat/.+|fix/.+|docs/.+|chore/.+|refactor/.+|test/.+|release/.+|hotfix/.+)$'; then
+  echo "⚠️  Branch '$BRANCH' doesn't match feat/|fix/|docs/|chore/|refactor/|test/|release/|hotfix/ — warning only."
+fi
+
+if [[ $fail -ne 0 ]]; then
+  echo ""
+  echo "Commit blocked by pre-commit hook. Fix the items above (or 'git commit --no-verify' to bypass intentionally)."
+  exit 1
+fi
+exit 0

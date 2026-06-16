@@ -1,0 +1,50 @@
+# ── Agent / AI tooling (must NOT be pushed) ────────────────────────────────
+.claude/
+.agent/
+.playwright-mcp/
+.cursor/
+.aider*
+
+# ── Secrets / env ──────────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# ── OS junk ────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Editor / IDE ───────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── Logs / temp ────────────────────────────────────────────────────────────
+*.log
+logs/
+tmp/
+.cache/
+
+# ── Node ───────────────────────────────────────────────────────────────────
+node_modules/
+.pnpm-store/
+dist/
+build/
+coverage/
+.next/
+.nuxt/
+.turbo/
+
+# ── Python ─────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
