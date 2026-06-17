@@ -1,0 +1,48 @@
+# Lấy cảm hứng từ VS Code Dark+ Theme
+format = """
+[╭─](dimmed blue)$directory$git_branch$git_status$nodejs$python$golang$rust
+[╰─](dimmed blue)$character"""
+
+# Tách dòng trống giữa các lệnh cho thoáng
+add_newline = true
+
+# Thư mục: Màu Xanh ngọc (giống màu tên class trong VS Code)
+[directory]
+style = "bold #4EC9B0"
+truncation_length = 3
+truncate_to_repo = true
+read_only = " 🔒"
+
+# Git Branch: Màu Cam đất (giống màu string)
+[git_branch]
+symbol = "🌱 "
+style = "bold #CE9178"
+format = "[$symbol$branch]($style) "
+
+# Git Status: Màu Đỏ hồng (giống màu keyword báo lỗi/thay đổi)
+[git_status]
+style = "bold #D16969"
+format = '([\[$all_status$ahead_behind\]]($style) )'
+
+# Ký tự gõ lệnh: Đổi màu theo trạng thái thành công/thất bại lệnh trước đó
+[character]
+success_symbol = "[❯](#007ACC)" # Xanh lam đặc trưng VS Code
+error_symbol = "[✗](#F44747)"   # Đỏ gắt
+vimcmd_symbol = "[❮](#4EC9B0)"
+
+# --- Hiển thị môi trường code (Chỉ hiện khi ở trong project tương ứng) ---
+
+[nodejs]
+symbol = " "
+style = "bold #B5CEA8" # Xanh lá nhạt
+format = "[$symbol($version )]($style)"
+
+[python]
+symbol = "🐍 "
+style = "bold #4EC9B0"
+format = "[$symbol($version )]($style)"
+
+[rust]
+symbol = "🦀 "
+style = "bold #CE9178"
+format = "[$symbol($version )]($style)"
