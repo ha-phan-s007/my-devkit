@@ -7,8 +7,9 @@ phần có thể phổ biến thành chuẩn team.
 local/
 ├── install.sh              # symlink các config vào $HOME (idempotent, backup file cũ)
 ├── claude/
-│   ├── settings.json       # ~/.claude/settings.json (model, theme, teammateMode=tmux…)
-│   └── keybindings.json    # ~/.claude/keybindings.json
+│   ├── settings.json           # ~/.claude/settings.json (model, theme, statusLine…)
+│   ├── keybindings.json        # ~/.claude/keybindings.json
+│   └── statusline-command.sh   # status line: cwd | branch | model | ctx% | 5h% | 7d%
 ├── shell/
 │   ├── .zshrc  .bashrc  .bash_profile  .zprofile
 │   └── .gitconfig

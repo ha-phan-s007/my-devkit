@@ -18,6 +18,7 @@ DRY=0; [[ "${1:-}" == "--dry-run" ]] && DRY=1
 MAP=(
   "claude/settings.json:$HOME/.claude/settings.json"
   "claude/keybindings.json:$HOME/.claude/keybindings.json"
+  "claude/statusline-command.sh:$HOME/.claude/statusline-command.sh"
   "shell/.zshrc:$HOME/.zshrc"
   "shell/.bashrc:$HOME/.bashrc"
   "shell/.bash_profile:$HOME/.bash_profile"

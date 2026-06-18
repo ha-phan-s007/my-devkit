@@ -17,5 +17,9 @@
   "theme": "dark",
   "teammateMode": "tmux",
   "includeCoAuthoredBy": false,
-  "gitAttribution": false
+  "gitAttribution": false,
+  "statusLine": {
+    "type": "command",
+    "command": "/Users/azoom/.claude/statusline-command.sh"
+  }
 }
