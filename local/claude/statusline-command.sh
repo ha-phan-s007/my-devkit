@@ -31,6 +31,7 @@ seven="$(field '.rate_limits.seven_day.used_percentage')"
 # ANSI colors (literal \033 — interpreted later by printf '%b').
 DIM='\033[2m'; GREY='\033[90m'; CYAN='\033[1;96m'
 GREEN='\033[32m'; YELLOW='\033[33m'; RED='\033[31m'; BYELLOW='\033[93m'
+MAGENTA='\033[1;95m'
 RESET='\033[0m'
 SEP="${DIM} | ${RESET}"
 
@@ -43,6 +44,20 @@ segs=()
 if [ -n "$cwd" ]; then
   branch="$(git -C "$cwd" rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
   [ -n "$branch" ] && segs+=("${CYAN}${branch}${RESET}")
+fi
+
+# Hey Clark active stage — magenta "🤖 <stage>" when a clark pipeline is running.
+# The orchestrator writes ".clark/.active" as "<stage>|<agent>|<model>|<trace>|<ts>"
+# (or "idle"). Show only if present, not idle, and modified within the last hour
+# (so a crashed session's stale state auto-clears).
+if [ -n "$cwd" ] && [ -f "$cwd/.clark/.active" ]; then
+  if [ -n "$(find "$cwd/.clark/.active" -mmin -60 2>/dev/null)" ]; then
+    active="$(head -n1 "$cwd/.clark/.active" 2>/dev/null)"
+    stage="${active%%|*}"
+    if [ -n "$stage" ] && [ "$stage" != "idle" ]; then
+      segs+=("${MAGENTA}🤖 ${stage}${RESET}")
+    fi
+  fi
 fi
 
 # model — dim; append [effort] only when effort is set and not "medium"
